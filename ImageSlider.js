@@ -1,4 +1,4 @@
-import React, {Component} from 'react';
+import React, { Component } from 'react';
 import {
     Image,
     Text,
@@ -69,9 +69,9 @@ export default class ImageSlider extends Component {
         if (majorVersion === 0 && minorVersion <= 19) {
             this._ref.scrollTo(0, x, true); // use old syntax
         } else {
-            this._ref.scrollTo({x: this.state.width * index, y: 0, animated: true});
+            this._ref.scrollTo({ x: this.state.width * index, y: 0, animated: true });
         }
-        this.setState({position: index});
+        this.setState({ position: index });
         if (isUpdating && this.props.onPositionChanged) {
             this.props.onPositionChanged(index);
         }
@@ -121,7 +121,7 @@ export default class ImageSlider extends Component {
         this._interval = setInterval(() => {
             const newWidth = Dimensions.get('window').width;
             if (newWidth !== this.state.width) {
-                this.setState({width: newWidth});
+                this.setState({ width: newWidth });
             }
         }, 16);
     }
@@ -141,20 +141,20 @@ export default class ImageSlider extends Component {
                 horizontal={true}
                 showsHorizontalScrollIndicator={false}
                 {...this._panResponder.panHandlers}
-                style={[styles.container, this.props.style, {height: height}]}>
+                style={[styles.container, this.props.style, { height: height }]}>
                 {this.props.images.map((image, index) => {
-                    const imageObject = typeof image === 'string' ? {uri: image} : image;
+                    const imageObject = typeof image === 'string' ? { uri: image } : image;
                     const imageComponent = <Image
                         key={index}
                         source={imageObject}
-                        style={{height, width}}
+                        style={[this.props.imageStyle, { height, width }]}
                     />;
                     if (this.props.onPress) {
                         return (
                             <TouchableOpacity
                                 key={index}
-                                style={{height, width}}
-                                onPress={() => this.props.onPress({image, index})}
+                                style={{ height, width }}
+                                onPress={() => this.props.onPress({ image, index })}
                                 delayPressIn={200}
                             >
                                 {imageComponent}
