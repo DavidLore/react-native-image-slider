@@ -57,6 +57,10 @@ export default class ImageSlider extends Component {
             width: Dimensions.get('window').width,
             scrolling: false,
         };
+
+        this._handleScroll = this._handleScroll.bind(this)
+        this._handleScrollEnd = debounce(this._handleScrollEnd.bind(this), 100).bind(this)
+
     }
 
     _onRef(ref) {
@@ -86,6 +90,18 @@ export default class ImageSlider extends Component {
             return this.props.position;
         }
         return this.state.position;
+    }
+
+    _handleScroll(event) {
+        this._handleScrollEnd(event.nativeEvent.contentOffset)
+    }
+
+    _handleScrollEnd(contentOffset) {
+        const width = this.props.width || this.state.width
+
+        const index = Math.round(contentOffset.x / width)
+
+        this._move(index)
     }
 
     componentDidUpdate(prevProps) {
