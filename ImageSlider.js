@@ -19,11 +19,12 @@ const minorVersion = +splitVersion[1];
 
 const styles = StyleSheet.create({
     container: {
+        flexDirection: 'row',
         backgroundColor: '#222'
     },
-    containerView: {
-        flexDirection: 'row',
-    },
+    // containerView: {
+    //     flexDirection: 'row',
+    // },
     buttons: {
         height: 15,
         marginTop: -15,
@@ -56,9 +57,6 @@ export default class ImageSlider extends Component {
             width: Dimensions.get('window').width,
             scrolling: false,
         };
-
-        this._handleScroll = this._handleScroll.bind(this)
-        this._handleScrollEnd = debounce(this._handleScrollEnd.bind(this), 100).bind(this)
     }
 
     _onRef(ref) {
@@ -90,18 +88,6 @@ export default class ImageSlider extends Component {
         return this.state.position;
     }
 
-    _handleScroll(event) {
-        this._handleScrollEnd(event.nativeEvent.contentOffset)
-    }
-
-    _handleScrollEnd(contentOffset) {
-        const width = this.props.width || this.state.width
-
-        const index = Math.round(contentOffset.x / width)
-
-        this._move(index)
-    }
-
     componentDidUpdate(prevProps) {
         if (prevProps.position !== this.props.position) {
             this._move(this.props.position);
@@ -131,11 +117,11 @@ export default class ImageSlider extends Component {
         };
 
         this._panResponder = PanResponder.create({
-            // onPanResponderRelease: release
-            onStartShouldSetPanResponder: () => true,
-            onMoveShouldSetPanResponder: () => true,
-            onPanResponderRelease: release,
-            onPanResponderTerminate: release,
+            onPanResponderRelease: release
+            // onStartShouldSetPanResponder: () => true,
+            // onMoveShouldSetPanResponder: () => true,
+            // onPanResponderRelease: release,
+            // onPanResponderTerminate: release,
         });
 
         this._interval = setInterval(() => {
@@ -163,31 +149,30 @@ export default class ImageSlider extends Component {
                 showsHorizontalScrollIndicator={false}
                 onScroll={this._handleScroll}
                 scrollEventThrottle={16}
+                {...this._panResponder.panHandlers}
                 style={[styles.container, this.props.style, { height: height }]}>
-                <View {...this._panResponder.panHandlers} style={styles.containerView}>
-                    {this.props.images.map((image, index) => {
-                        const imageObject = typeof image === 'string' ? { uri: image } : image;
-                        const imageComponent = <Image
-                            key={index}
-                            source={imageObject}
-                            style={{ height, width }}
-                        />;
-                        if (this.props.onPress) {
-                            return (
-                                <TouchableOpacity
-                                    key={index}
-                                    style={{ height, width }}
-                                    onPress={() => this.props.onPress({ image, index })}
-                                    delayPressIn={200}
-                                >
-                                    {imageComponent}
-                                </TouchableOpacity>
-                            );
-                        } else {
-                            return imageComponent;
-                        }
-                    })}
-                </View>
+                {this.props.images.map((image, index) => {
+                    const imageObject = typeof image === 'string' ? { uri: image } : image;
+                    const imageComponent = <Image
+                        key={index}
+                        source={imageObject}
+                        style={[this.props.imageStyle, { height, width }]}
+                    />;
+                    if (this.props.onPress) {
+                        return (
+                            <TouchableOpacity
+                                key={index}
+                                style={{ height, width }}
+                                onPress={() => this.props.onPress({ image, index })}
+                                delayPressIn={200}
+                            >
+                                {imageComponent}
+                            </TouchableOpacity>
+                        );
+                    } else {
+                        return imageComponent;
+                    }
+                })}
             </ScrollView>
             <View style={styles.buttons}>
                 {this.props.images.map((image, index) => {
@@ -204,19 +189,4 @@ export default class ImageSlider extends Component {
             </View>
         </View>);
     }
-}
-
-function debounce(func, wait, immediate) {
-    var timeout;
-    return function () {
-        var context = this, args = arguments;
-        var later = function () {
-            timeout = null;
-            if (!immediate) func.apply(context, args);
-        };
-        var callNow = immediate && !timeout;
-        clearTimeout(timeout);
-        timeout = setTimeout(later, wait);
-        if (callNow) func.apply(context, args);
-    };
 }
