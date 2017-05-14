@@ -75,9 +75,13 @@ export default class ImageSlider extends Component {
         const isUpdating = index !== this._getPosition();
         const x = width * index;
         if (majorVersion === 0 && minorVersion <= 19) {
-            this._ref.scrollTo(0, x, true); // use old syntax
+            console.log('inside if #0#')
+            if (this._ref && this._ref.scrollTo)
+                this._ref.scrollTo(0, x, true); // use old syntax
         } else {
-            this._ref.scrollTo({ x: width * index, y: 0, animated: true });
+            console.log('inside if #111#')
+            if (this._ref && this._ref.scrollTo)
+                this._ref.scrollTo({ x: width * index, y: 0, animated: true });
         }
         this.setState({ position: index });
         if (isUpdating && this.props.onPositionChanged) {
